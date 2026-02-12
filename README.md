@@ -11,3 +11,8 @@ chmod +x ./powershell.sh
 
 ## Update Powershell
 Run the script again to update Powershell
+
+## Run Powershell
+```
+pwsh
+```
