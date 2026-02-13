@@ -1,0 +1,41 @@
+#compdef pwsh
+
+zstyle ':completion:*:*:pwsh:*' insert-tab pending
+zstyle ':completion:*:*:pwsh:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*:*:pwsh:*' menu select
+zstyle ':completion:*:*:pwsh:*' special-dirs true
+
+_pwsh() {
+    setopt localoptions GLOB_DOTS
+
+    local -a opts
+    opts=(
+        '*-Command[Executes specified commands]'
+        '*-CommandWithArgs[Executes commands with arguments]'
+        '*-ConfigurationName[Configuration name]'
+        '*-CustomPipeName[Custom pipe for debugging]'
+        '*-EncodedCommand[Base64 encoded command]'
+        '*-ExecutionPolicy[Sets default execution policy]:policy:(AllSigned Bypass Default RemoteSigned Restricted Undefined Unrestricted)'
+        '*-File[Runs script file]:script file:_files -g "*(#qD)"'
+        '*-InputFormat[Format of data sent to PowerShell]:format:(Text XML)'
+        '*-Interactive[Present an interactive prompt]'
+        '*-Login[Start as a login shell]'
+        '*-NoExit[Do not exit after running startup commands]'
+        '*-NoLogo[Hide copyright logo]'
+        '*-NonInteractive[Do not present an interactive prompt]'
+        '*-NoProfile[Do not load profiles]'
+        '*-NoProfileLoadTime[Do not show profile load time]'
+        '*-OutputFormat[Format for output]:format:(Text XML)'
+        '*-SettingsFile[Path to settings.json file]:settings file:_files -g "*(#qD)"'
+        '*-SSHServerMode[Start as an SSH subsystem]'
+        '*-Version[Display version]'
+        '*-Help[Display help]'
+        '*-ConfigurationFile[Path to session configuration file]:config file:_files -g "*.(pssc)(#qD)|*(#q/D)"'
+        '*-WorkingDirectory[Sets starting directory]:directory:_files -/D'
+    )
+
+    _arguments -M 'm:{a-zA-Z}={A-Za-z}' -S $opts
+}
+
+_pwsh "$@"
+
