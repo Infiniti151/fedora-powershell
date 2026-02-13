@@ -1,0 +1,67 @@
+_pwsh_filter_files() {
+    local cur="$1" ext="$2"
+    # Enable showing hidden files for this command
+    local old_dotglob=$(shopt -p dotglob)
+    shopt -s dotglob
+    
+    local files=$(compgen -f -- "$cur")
+    COMPREPLY=()
+    for f in $files; do
+        if [[ -d "$f" ]]; then
+            COMPREPLY+=("$f/")
+        elif [[ -n "$ext" ]]; then
+            [[ "$f" == *"$ext" ]] && COMPREPLY+=("$f")
+        else
+            [[ -f "$f" ]] && COMPREPLY+=("$f")
+        fi
+    done
+    
+    # Restore original dotglob state
+    eval "$old_dotglob"
+    [[ ${#COMPREPLY[@]} -gt 0 ]] && compopt -o nospace
+}
+
+_pwsh_match() {
+    local list="$1" search="$2" prefix="$3"
+    local matches=$(printf "%s\n" $list | grep -i "^${prefix}${search}")
+    COMPREPLY=()
+    COMPREPLY=( $(compgen -W "${matches}" -- "") )
+}
+
+_pwsh_completions() {
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="-Command -CommandWithArgs -ConfigurationFile -ConfigurationName \
+          -CustomPipeName -EncodedCommand -ExecutionPolicy -File -Help \
+          -InputFormat -Interactive -Login -NoExit -NoLogo \
+          -NonInteractive -NoProfile -NoProfileLoadTime -OutputFormat \
+          -SettingsFile -SSHServerMode -Version -WorkingDirectory"
+
+    case "${prev,,}" in
+        -inputformat|-outputformat)
+            _pwsh_match "Text XML" "$cur" ""
+            return 0 ;;
+        -executionpolicy)
+            _pwsh_match "AllSigned Bypass Default RemoteSigned Restricted Undefined Unrestricted" "$cur" ""
+            return 0 ;;
+        -workingdirectory)
+            local old_dotglob=$(shopt -p dotglob); shopt -s dotglob
+            COMPREPLY=( $(compgen -d -- "$cur") )
+            eval "$old_dotglob"
+            return 0 ;;
+        -configurationfile)
+            _pwsh_filter_files "$cur" ".pssc"
+            return 0 ;;
+        -file|-settingsfile)
+            _pwsh_filter_files "$cur" ""
+            return 0 ;;
+    esac
+
+    if [[ -z "$cur" || "$cur" == -* ]]; then
+        _pwsh_match "$opts" "${cur#-}" "-"
+    fi
+}
+complete -F _pwsh_completions pwsh
+
