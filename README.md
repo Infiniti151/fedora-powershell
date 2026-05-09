@@ -1,7 +1,8 @@
 # fedora-powershell
 A simple Bash script for installing/updating PowerShell 7 on Fedora. Installs completions for Bash, Fish, and Zsh.
 
-**Note**: Completions don't include -MTA, -STA, and -WindowStyle flags as they don't work in Linux.
+>[!IMPORTANT]
+>Completions don't include -MTA, -STA, and -WindowStyle flags as they don't work in Linux.
 
 ## Install PowerShell
 ```
